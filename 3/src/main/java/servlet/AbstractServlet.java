@@ -2,6 +2,8 @@ package servlet;
 
 import db.DBUtils;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
@@ -13,7 +15,24 @@ import java.sql.ResultSet;
 /**
  * @author volhovm
  */
-public class ServletCommon {
+public abstract class AbstractServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            Statement stmt = DBUtils.getStatement();
+            handleRequest(stmt, request, response);
+            stmt.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        response.setContentType("text/html");
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    protected abstract void handleRequest(Statement statement, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, SQLException;
+
     public static void dumpItems(HttpServletResponse response, ResultSet rs, String title)
             throws IOException, SQLException {
         response.getWriter().println("<html><body>");
@@ -26,16 +45,4 @@ public class ServletCommon {
         response.getWriter().println("</body></html>");
     }
 
-    public static void doGoodies(HttpServletResponse response, DBHandler<Statement> handler) {
-        try {
-            Statement stmt = DBUtils.getStatement();
-            handler.apply(stmt);
-            stmt.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        response.setContentType("text/html");
-        response.setStatus(HttpServletResponse.SC_OK);
-    }
 }
