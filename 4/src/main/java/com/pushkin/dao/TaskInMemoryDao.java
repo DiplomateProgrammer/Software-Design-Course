@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 public class TaskInMemoryDao implements TaskDao{
     private final AtomicInteger lastListId = new AtomicInteger(0);
     private final AtomicInteger lastTaskId = new AtomicInteger(0);
-    private final Map<Integer, TaskList> taskLists = new ConcurrentHashMap<Integer, TaskList>();
-    private final Map<Integer, Task> tasks = new ConcurrentHashMap<Integer, Task>();
+    private final ConcurrentMap<Integer, TaskList> taskLists = new ConcurrentHashMap<Integer, TaskList>();
+    private final ConcurrentMap<Integer, Task> tasks = new ConcurrentHashMap<Integer, Task>();
 
     @Override
     public List<TaskList> getLists() {
